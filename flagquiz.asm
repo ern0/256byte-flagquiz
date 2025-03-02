@@ -1,15 +1,5 @@
 ; Flag Quiz, a 256-byte game for MS-DOS ; 2025, ern0
 
-; Color codes:
-;  0: BLACK
-;  1: BLUE
-;  2: GREEN
-;  3: CYAN
-;  4: RED
-;  5: PURPLE
-;  6: YELLOW
-;  7: WHITE
-
 ;-------------------------------------
 	org 100H
 
@@ -28,7 +18,6 @@
 
 	mov ax,4c00H
 	int 21H
-
 ;-------------------------------------
 line:
         pusha
