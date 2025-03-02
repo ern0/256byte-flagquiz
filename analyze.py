@@ -20,7 +20,11 @@ class Analyze():
     def main(self):
 
         self.data()
-        self.dump()
+        self.order_and_print("color")
+        self.order_and_print("diff")
+        self.order_and_print("d1")
+        self.order_and_print("d2")
+        self.order_and_print("d3")
 
     def data(self):
 
@@ -45,24 +49,45 @@ class Analyze():
         self.flag("Armenia", "am", RED, BLUE, YELLOW)
         self.flag("Bolivia", "bo", RED, YELLOW, GREEN)
 
-
     def flag(self, _name, _tld, c1, c2, c3):
 
+
         c0 = 4
-        self.add(c1)
-        self.add(c2)
-        self.add(c3)
+        self.add_value("color", c1)
+        self.add_value("color", c2)
+        self.add_value("color", c3)
 
-    def add(self, color):
+        d1 = c1 - c0
+        if d1 < 0: d1 += 8
+        self.add_value("diff", d1)
+        self.add_value("d1", d1)
 
-        if color in self.stat:
-            self.stat[color] += 1
-        else:
-            self.stat[color] = 1
+        d2 = c2 - c1
+        if d2 < 0: d2 += 8
+        self.add_value("diff", d2)
+        self.add_value("d2", d2)
 
-    def dump(self):
+        d3 = c3 - c2
+        if d3 < 0: d3 += 8
+        self.add_value("diff", d3)
+        self.add_value("d3", d3)
 
-        print(self.stat)
+    def add_value(self, token, value):
+
+        if token not in self.stat:
+            self.stat[token] = {}
+
+        if value not in self.stat[token]:
+            self.stat[token][value] = 0
+
+        self.stat[token][value] += 1
+
+    def order_and_print(self, token):
+
+        print("--",token,"--")
+        ordered_array = sorted(self.stat[token].items(), key=lambda item: -item[1])
+        for (key, value) in ordered_array:
+            print( str(key).rjust(4) + ":", str(value).rjust(4) )
 
 if __name__ == "__main__":
     Analyze().main()
