@@ -15,6 +15,7 @@ WHITE = 7
 class Analyze():
 
     def __init__(self):
+
         self.stat = {}
 
     def main(self):
@@ -29,7 +30,6 @@ class Analyze():
     def data(self):
 
         self.flag("Germany", "de", BLACK, YELLOW, WHITE)
-        self.flag("Italy", "it", GREEN, WHITE, RED)
         self.flag("France", "fr", BLUE, WHITE, RED)
         self.flag("Bulgaria", "bg", WHITE, GREEN, RED)
         self.flag("Ireland", "ie", GREEN, WHITE, RED)
@@ -47,10 +47,8 @@ class Analyze():
         self.flag("Yemen", "ye", RED, WHITE, BLACK)
         self.flag("Gabon", "ga", GREEN, YELLOW, BLUE)
         self.flag("Armenia", "am", RED, BLUE, YELLOW)
-        self.flag("Bolivia", "bo", RED, YELLOW, GREEN)
 
     def flag(self, _name, _tld, c1, c2, c3):
-
 
         c0 = 4
         self.add_value("color", c1)
