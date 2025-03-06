@@ -4,25 +4,19 @@
 ;-----------------------------------------------------
 	org 100H
 
-        lea si,[data]   ; reset data pointer
-        mov cx,18       ; number of data items
+        lea si,[data]           ; reset data pointer
+        mov cx,18               ; number of data items
 
 next_flag:
-        mov ax,0dH      ; set video mode and clear screen
+        mov ax,0dH              ; set video mode and clear screen
         int 10H
-; 158
 
-        lea di,[print_tld]
-
-        lodsb
-        mov bh,al
-        shr al,1
-        stosb
-
-        lodsb
-        mov bl,al
-
-        movsb
+        lodsw                   ; AL: 8-bit color, AH: 1-bit color and shifted tld-2
+        mov bx,ax               ; copy color to BX
+        shr ah,1                ; shift back tld-2
+        lodsb                   ; load tld-1, so AX now contains full tld
+        lea di,[print_tld]      ; set DI to print area
+        stosw                   ; copy to tld to print area
 
         call line
         shr bx,3

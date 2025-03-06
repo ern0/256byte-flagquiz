@@ -61,11 +61,11 @@ class Analyze:
     def flag_print(self, name, tld, c1, c2, c3):
 
         colors = (c3 << 6) | (c2 << 3) | (c1 << 0)
-
         color_bit = (colors & 0x100) >> 8
-        b1 = self.fmt(ord(tld[0]) << 1 | color_bit)
-        b2 = self.fmt(colors & 0xff)
-        b3 = self.fmt(ord(tld[1]))
+
+        b1 = self.fmt(colors & 0xff)
+        b2 = self.fmt(ord(tld[1]) << 1 | color_bit)
+        b3 = self.fmt(ord(tld[0]))
 
         sp = " " * (12 - len(b1 + b2 + b3))
         print(f"\tdb {b1}, {b2}, {b3} {sp} ; {name} (.{tld})")
