@@ -1,28 +1,56 @@
-; Flag Quiz, a 256-byte game for MS-DOS ; 2025, ern0
+; Flag Quiz, a 256-byte game for MS-DOS - (C)2025 ern0
+; Compiler: NASM
 
-;-------------------------------------
+;-----------------------------------------------------
 	org 100H
 
-        mov ax,0dH
+        lea si,[data]   ; reset data pointer
+        mov cx,18       ; number of data items
+
+next_flag:
+        mov ax,0dH      ; set video mode and clear screen
         int 10H
 
-        mov bl,4
+        lea di,[print_tld]
+
+        lodsb
+        mov bl,al
+        lodsb
+        mov bh,al
+        shr al,1
+        stosb
+        movsb
+
         call line
-        mov bl,7
+        shr bx,3
         call line
-        mov bl,2
+        shr bx,3
         call line
+
+        lea dx,[print_start]
+        mov ah,9
+        int 21H
 
         xor ax,ax
         int 16H
+        cmp al,27
+        loop next_flag
 
+exit:
 	mov ax,4c00H
 	int 21H
-;-------------------------------------
+;-----------------------------------------------------
+print_start:
+        db "TLD: "
+print_tld:
+        db "cc"
+        db 13,10,'$'
+;-----------------------------------------------------
 line:
         pusha
 
         mov ch,4
+        and bl,7
         or bl,8
 .half:
         mov cl,10
@@ -39,3 +67,6 @@ line:
 
         popa
         ret
+;-----------------------------------------------------
+data:
+        %include "flagdata.inc"

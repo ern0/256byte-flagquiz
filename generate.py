@@ -12,24 +12,28 @@ YELLOW = 6
 WHITE = 7
 
 
-class Analyze():
+class Analyze:
 
     def __init__(self):
 
         self.stat = {}
+        self.count = 0
 
     def main(self):
 
-        self.data()
-        self.order_and_print("color")
-        self.order_and_print("diff")
-        self.order_and_print("d1")
-        self.order_and_print("d2")
-        self.order_and_print("d3")
+        if False:
+            self.order_and_print("color")
+            self.order_and_print("diff")
+            self.order_and_print("d1")
+            self.order_and_print("d2")
+            self.order_and_print("d3")
 
-    def data(self):
+        print(f"\t; flag data")
+        self.gen()
 
-        self.flag("Germany", "de", BLACK, YELLOW, WHITE)
+    def gen(self):
+
+        self.flag("Germany", "de", BLACK, RED, YELLOW)
         self.flag("France", "fr", BLUE, WHITE, RED)
         self.flag("Bulgaria", "bg", WHITE, GREEN, RED)
         self.flag("Ireland", "ie", GREEN, WHITE, RED)
@@ -48,7 +52,33 @@ class Analyze():
         self.flag("Gabon", "ga", GREEN, YELLOW, BLUE)
         self.flag("Armenia", "am", RED, BLUE, YELLOW)
 
-    def flag(self, _name, _tld, c1, c2, c3):
+    def flag(self, name, tld, c1, c2, c3):
+
+        self.flag_print(name, tld, c1, c2, c3)
+        self.flag_stat(name, tld, c1, c2, c3)
+        self.count += 1
+
+    def flag_print(self, name, tld, c1, c2, c3):
+
+        colors = (c3 << 6) | (c2 << 3) | (c1 << 0)
+
+        b1 = self.fmt(colors & 0xff)
+        color_bit = (colors & 0x100) >> 8
+        b2 = self.fmt(ord(tld[0]) << 1 | color_bit)
+        b3 = self.fmt(ord(tld[1]))
+
+        sp = " " * (12 - len(b1 + b2 + b3))
+        print(f"\tdb {b1}, {b2}, {b3} {sp} ; {name} (.{tld})")
+
+    @staticmethod
+    def fmt(value):
+
+        if value < 0xa0:
+            return "{0:02x}H".format(value)
+        else:
+            return "{0:03x}H".format(value)
+
+    def flag_stat(self, name, tld, c1, c2, c3):
 
         c0 = 4
         self.add_value("color", c1)
