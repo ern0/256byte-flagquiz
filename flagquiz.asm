@@ -10,15 +10,18 @@
 next_flag:
         mov ax,0dH      ; set video mode and clear screen
         int 10H
+; 158
 
         lea di,[print_tld]
 
         lodsb
-        mov bl,al
-        lodsb
         mov bh,al
         shr al,1
         stosb
+
+        lodsb
+        mov bl,al
+
         movsb
 
         call line
@@ -34,6 +37,7 @@ next_flag:
         xor ax,ax
         int 16H
         cmp al,27
+        je  exit
         loop next_flag
 
 exit:

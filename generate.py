@@ -62,9 +62,9 @@ class Analyze:
 
         colors = (c3 << 6) | (c2 << 3) | (c1 << 0)
 
-        b1 = self.fmt(colors & 0xff)
         color_bit = (colors & 0x100) >> 8
-        b2 = self.fmt(ord(tld[0]) << 1 | color_bit)
+        b1 = self.fmt(ord(tld[0]) << 1 | color_bit)
+        b2 = self.fmt(colors & 0xff)
         b3 = self.fmt(ord(tld[1]))
 
         sp = " " * (12 - len(b1 + b2 + b3))
