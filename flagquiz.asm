@@ -5,24 +5,24 @@
 	org 100H
 
         lea si,[data]           ; reset data pointer
-        mov cx,18               ; number of data items
+        mov bp,18               ; number of data items
 
 next_flag:
         mov ax,0dH              ; set video mode and clear screen
         int 10H
 
-        lodsw                   ; AL: 8-bit color, AH: 1-bit color and shifted tld-2
-        mov bx,ax               ; copy color to BX
+        lodsw                   ; AL: 8-bit color, AH: shifted tld-2 and 1-bit color
+        mov bx,ax               ; copy 9-bit color to BX
         shr ah,1                ; shift back tld-2
         lodsb                   ; load tld-1, so AX now contains full tld
         lea di,[print_tld]      ; set DI to print area
         stosw                   ; copy to tld to print area
 
-        call line
-        shr bx,3
-        call line
-        shr bx,3
-        call line
+        mov cx,3                ; number of colors in a flag
+next_tricolor:
+        call strip              ; print one strip, BL will be masked to 3-bit
+        shr bx,3                ; shift next 3-bit
+        loop next_tricolor      ; repeat strip
 
         lea dx,[print_start]
         mov ah,9
@@ -32,7 +32,8 @@ next_flag:
         int 16H
         cmp al,27
         je  exit
-        loop next_flag
+        dec bp
+        jne next_flag
 
 exit:
 	mov ax,4c00H
@@ -44,7 +45,7 @@ print_tld:
         db "cc"
         db 13,10,'$'
 ;-----------------------------------------------------
-line:
+strip:
         pusha
 
         mov ch,4
