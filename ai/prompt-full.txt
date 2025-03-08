@@ -1,0 +1,78 @@
+Explain what this program does,
+how it works,
+explain data format,
+subroutines,
+register usage.
+Provide the result in .md file.
+--
+	org 100H
+        lea si,[data]
+        mov bp,18
+next_flag:
+        mov ax,0dH
+        int 10H
+        lodsw
+        mov bx,ax
+        shr ah,1
+        lodsb
+        lea di,[print_tld]
+        stosw
+        mov cx,3
+next_tricolor:
+        call strip
+        shr bx,3
+        loop next_tricolor
+        lea dx,[print_start]
+        mov ah,9
+        int 21H
+        xor ax,ax
+        int 16H
+        cmp al,27
+        je  exit
+        dec bp
+        jne next_flag
+exit:
+	mov ax,4c00H
+	int 21H
+print_start:
+        db "TLD: "
+print_tld:
+        db "cc"
+        db 13,10,'$'
+strip:
+        pusha
+        mov ch,4
+        and bl,7
+        or bl,8
+.half:
+        mov cl,10
+.char:
+        xor bh,bh
+        mov ax,0edbH
+        int 10H
+        dec cl
+        jne .char
+        xor bl,bl
+        dec ch
+        jne .half
+        popa
+        ret
+data:
+	db 0a0H, 0cbH, 64H
+	db 39H, 0e5H, 66H
+	db 17H, 0cfH, 62H
+	db 3aH, 0cbH, 69H
+	db 7cH, 0d8H, 6eH
+	db 3cH, 0e9H, 61H
+	db 34H, 0e7H, 65H
+	db 0e7H, 0f3H, 62H
+	db 0fH, 0ebH, 72H
+	db 31H, 0dfH, 72H
+	db 0bcH, 0eaH, 68H
+	db 16H, 0e9H, 6cH
+	db 0ccH, 0e7H, 72H
+	db 0c1H, 0cbH, 65H
+	db 7aH, 0d8H, 73H
+	db 3cH, 0caH, 79H
+	db 72H, 0c2H, 67H
+	db 8cH, 0dbH, 61H
