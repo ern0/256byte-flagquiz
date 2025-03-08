@@ -1,4 +1,3 @@
-	; flag data
 	db 0a0H, 0cbH, 64H   ; Germany (.de)
 	db 39H, 0e5H, 66H    ; France (.fr)
 	db 17H, 0cfH, 62H    ; Bulgaria (.bg)

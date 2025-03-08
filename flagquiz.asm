@@ -1,5 +1,6 @@
-; Flag Quiz, a 256-byte game for MS-DOS - (C)2025 ern0
-; Compiler: NASM
+; Flag Quiz - created by ern0/Abaddon, 2025
+; A 256-byte game for MS-DOS written in clean code asm
+; https://github.com/ern0/256byte-flagquiz
 
 ;-----------------------------------------------------
 	org 100H
