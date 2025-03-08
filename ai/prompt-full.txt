@@ -38,22 +38,22 @@ next_tricolor:
         loop next_tricolor      
         ret
 display_strip:
-        pusha
-        mov ch,4
-        and bl,7
-        or bl,8
+        pusha                   
+        mov ch,4                
+        and bl,7                
+        or bl,8                 
 .half:
-        mov cl,10
+        mov cl,10               
 .char:
-        xor bh,bh
-        mov ax,0edbH
+        xor bh,bh               
+        mov ax,0edbH            
         int 10H
-        dec cl
+        dec cl                  
         jne .char
-        xor bl,bl
-        dec ch
+        xor bl,bl               
+        dec ch                  
         jne .half
-        popa
+        popa                    
         ret
 read_answer:
         lea dx,[print_question] 
@@ -94,7 +94,7 @@ result:
         %rep COUNT
             db 249              
         %endrep
-        db "]",13,10,'$'
+        db "]",13,10,10,'$'
 data:
 bss:
 	db 0a0H, 0cbH, 64H   

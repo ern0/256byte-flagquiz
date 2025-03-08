@@ -1,5 +1,5 @@
-; Flag Quiz - created by ern0/Abaddon, 2025
-; A 256-byte game for MS-DOS written in clean code asm
+; Flag Quiz - created by ern0/Abaddon, 2025.03.09
+; A 256-byte game for MS-DOS written in clean code assembly
 ; https://github.com/ern0/256byte-flagquiz
 
 ;----------------------------------------------------------------------------
@@ -53,25 +53,25 @@ next_tricolor:
 ;----------------------------------------------------------------------------
 display_strip:
 
-        pusha
+        pusha                   ; save registers
 
-        mov ch,4
-        and bl,7
-        or bl,8
+        mov ch,4                ; number of strip segments: 4
+        and bl,7                ; adjust color: keep only low 3 bits
+        or bl,8                 ; adjust color: select light colors
 .half:
-        mov cl,10
+        mov cl,10               ; width of the strip: 10
 .char:
-        xor bh,bh
-        mov ax,0edbH
+        xor bh,bh               ; page: 0 (whatever it means)
+        mov ax,0edbH            ; character and function ID
         int 10H
-        dec cl
+        dec cl                  ; strip loop
         jne .char
 
-        xor bl,bl
-        dec ch
+        xor bl,bl               ; set color to black after first strip segment
+        dec ch                  ; segment loop
         jne .half
 
-        popa
+        popa                    ; restore registers
         ret
 ;----------------------------------------------------------------------------
 read_answer:
@@ -121,7 +121,7 @@ result:
         %rep COUNT
             db 249              ; empty slot indicator (little dot)
         %endrep
-        db "]",13,10,'$'
+        db "]",13,10,10,'$'
 ;----------------------------------------------------------------------------
 data:
         %include "flagdata.inc"
