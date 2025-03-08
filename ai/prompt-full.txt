@@ -5,41 +5,38 @@ subroutines,
 register usage.
 Provide the result in .md file.
 --
+COUNT   equ 18
 	org 100H
-        lea si,[data]
-        mov bp,18
+        lea si,[data]           
+        mov bp,COUNT            
+        call clear_screen
 next_flag:
-        mov ax,0dH
-        int 10H
-        lodsw
-        mov bx,ax
-        shr ah,1
-        lodsb
-        lea di,[print_tld]
-        stosw
-        mov cx,3
-next_tricolor:
-        call strip
-        shr bx,3
-        loop next_tricolor
-        lea dx,[print_start]
-        mov ah,9
-        int 21H
-        xor ax,ax
-        int 16H
-        cmp al,27
-        je  exit
-        dec bp
+        call load_data
+        call display_flag
+        call read_answer
+        dec bp                  
         jne next_flag
-exit:
-	mov ax,4c00H
-	int 21H
-print_start:
-        db "TLD: "
-print_tld:
-        db "cc"
-        db 13,10,'$'
-strip:
+        jmp exit
+clear_screen:
+        mov ax,0dH              
+        int 10H
+        ret
+load_data:
+        lodsw                   
+        mov bx,ax               
+        shr ah,1                
+        lodsb                   
+        lea di,[print_tld]      
+        stosw                   
+        ret
+display_flag:
+        mov cx,3                
+next_tricolor:
+        call display_strip      
+        shr bx,3                
+        loop next_tricolor      
+        ret
+display_strip:
         pusha
         mov ch,4
         and bl,7
@@ -57,22 +54,64 @@ strip:
         jne .half
         popa
         ret
+read_answer:
+        lea dx,[print_question]    
+        mov ah,9
+        int 21H
+        lea dx,[bss]            
+        call read_key           
+        mov dl,al               
+        call read_key           
+        mov dh,al               
+        mov al,'x'              
+        cmp dx,word [print_tld] 
+        jne .fail
+        mov al,251              
+.fail:
+        lea bx,[result + COUNT]
+        sub bx,bp
+        mov byte [bx],al
+        lea dx,[print_answer]
+        mov ah,9
+        int 21H
+        ret
+read_key:
+        mov ah,01H              
+        int 21H
+        cmp al,27               
+        je  exit
+        ret
+exit:
+	mov ax,4c00H            
+	int 21H
+print_question:
+        db "TLD: $"
+print_answer:
+        db " - "
+print_tld:
+        db "cc ["
+result:
+        %rep COUNT
+            db 249              
+        %endrep
+        db "]",13,10,'$'
 data:
-	db 0a0H, 0cbH, 64H
-	db 39H, 0e5H, 66H
-	db 17H, 0cfH, 62H
-	db 3aH, 0cbH, 69H
-	db 7cH, 0d8H, 6eH
-	db 3cH, 0e9H, 61H
-	db 34H, 0e7H, 65H
-	db 0e7H, 0f3H, 62H
-	db 0fH, 0ebH, 72H
-	db 31H, 0dfH, 72H
-	db 0bcH, 0eaH, 68H
-	db 16H, 0e9H, 6cH
-	db 0ccH, 0e7H, 72H
-	db 0c1H, 0cbH, 65H
-	db 7aH, 0d8H, 73H
-	db 3cH, 0caH, 79H
-	db 72H, 0c2H, 67H
-	db 8cH, 0dbH, 61H
+bss:
+	db 0a0H, 0cbH, 64H   
+	db 39H, 0e5H, 66H    
+	db 17H, 0cfH, 62H    
+	db 3aH, 0cbH, 69H    
+	db 7cH, 0d8H, 6eH    
+	db 3cH, 0e9H, 61H    
+	db 34H, 0e7H, 65H    
+	db 0e7H, 0f3H, 62H   
+	db 0fH, 0ebH, 72H    
+	db 31H, 0dfH, 72H    
+	db 0bcH, 0eaH, 68H   
+	db 16H, 0e9H, 6cH    
+	db 0ccH, 0e7H, 72H   
+	db 0c1H, 0cbH, 65H   
+	db 7aH, 0d8H, 73H    
+	db 3cH, 0caH, 79H    
+	db 72H, 0c2H, 67H    
+	db 8cH, 0dbH, 61H    
