@@ -8,7 +8,7 @@ COUNT   equ 18
 	org 100H
 
         lea si,[data]           ; reset data pointer
-        mov bp,COUNT            ; number of data items
+        mov bp,0                ; number of data items
 
         call clear_screen
 next_flag:
@@ -16,7 +16,8 @@ next_flag:
         call display_flag
         call read_answer
 
-        dec bp                  ; go with next flag, if any
+        inc bp                  ; go with next flag, if any
+        cmp bp,COUNT
         jne next_flag
 
         jmp exit
@@ -75,7 +76,7 @@ display_strip:
 ;----------------------------------------------------------------------------
 read_answer:
 
-        lea dx,[print_question]    ; display question
+        lea dx,[print_question] ; display question
         mov ah,9
         int 21H
 
@@ -90,18 +91,17 @@ read_answer:
         jne .fail
         mov al,251              ; pass indicator (pipe)
 .fail:
-        lea bx,[result + COUNT]
-        sub bx,bp
-        mov byte [bx],al
+        mov DS:byte [BP + result],al
+                                ; copy indicator to the actual result position
 
-        lea dx,[print_answer]
+        lea dx,[print_answer]   ; display the result
         mov ah,9
         int 21H
 
         ret
 ;----------------------------------------------------------------------------
 read_key:
-        mov ah,01H              ; read char
+        mov ah,01H              ; read character
         int 21H
         cmp al,27               ; exit on ESC
         je  exit
