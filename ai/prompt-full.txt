@@ -67,10 +67,17 @@ read_answer:
         mov al,'x'              
         cmp dx,word [print_tld] 
         jne .fail
+        mov ax,[num]            
+        inc ah                  
+        cmp ah,':'              
+        jne .below10
+        mov ah,'0'              
+        inc al                  
+.below10:
+        mov [num],ax
         mov al,251              
 .fail:
-        mov DS:byte [BP + result],al
-                                
+        mov DS:[BP + result],al 
         lea dx,[print_answer]   
         mov ah,9
         int 21H
@@ -94,7 +101,9 @@ result:
         %rep COUNT
             db 249              
         %endrep
-        db "]",13,10,10,'$'
+        db "] "
+num:
+        db "00/18",13,10,10,'$'
 data:
 bss:
 	db 0a0H, 0cbH, 64H   

@@ -89,10 +89,19 @@ read_answer:
         mov al,'x'              ; fail indicator
         cmp dx,word [print_tld] ; compare DX with correct answer
         jne .fail
+
+        mov ax,[num]            ; load 2-digit result counter
+        inc ah                  ; increment low digit
+        cmp ah,':'              ; check overflow: '9' -> ':'
+        jne .below10
+        mov ah,'0'              ; reset low digit
+        inc al                  ; increment high digit
+.below10:
+        mov [num],ax
         mov al,251              ; pass indicator (pipe)
+
 .fail:
-        mov DS:byte [BP + result],al
-                                ; copy indicator to the actual result position
+        mov DS:[BP + result],al ; copy indicator to the actual result position
 
         lea dx,[print_answer]   ; display the result
         mov ah,9
@@ -121,7 +130,9 @@ result:
         %rep COUNT
             db 249              ; empty slot indicator (little dot)
         %endrep
-        db "]",13,10,10,'$'
+        db "] "
+num:
+        db "00/18",13,10,10,'$'
 ;----------------------------------------------------------------------------
 data:
         %include "flagdata.inc"
