@@ -10,13 +10,13 @@ COUNT   equ 18
         lea si,[data]           
         mov bp,0                
         call clear_screen
-next_flag:
+.next_flag:
         call load_data
         call display_flag
         call read_answer
         inc bp                  
         cmp bp,COUNT
-        jne next_flag
+        jne .next_flag
         jmp exit
 clear_screen:
         mov ax,0dH              

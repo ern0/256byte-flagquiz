@@ -11,14 +11,14 @@ COUNT   equ 18
         mov bp,0                ; number of data items
 
         call clear_screen
-next_flag:
+.next_flag:
         call load_data
         call display_flag
         call read_answer
 
         inc bp                  ; go with next flag, if any
         cmp bp,COUNT
-        jne next_flag
+        jne .next_flag
 
         jmp exit
 ;----------------------------------------------------------------------------

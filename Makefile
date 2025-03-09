@@ -1,5 +1,7 @@
 flagquiz.com: flagquiz.asm flagdata.inc ai/prompt-full.txt
-	nasm flagquiz.asm -o flagquiz.com
+	./inline.py flagquiz.asm > /tmp/flagquiz-inline.asm
+	nasm /tmp/flagquiz-inline.asm -o flagquiz.com
+	rm -f /tmp/flagquiz-inline.asm
 
 flagdata.inc: generate.py
 	./generate.py > flagdata.inc
