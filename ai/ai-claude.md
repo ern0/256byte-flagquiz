@@ -1,69 +1,94 @@
-# Assembly Program Analysis
+# Assembly Flag Guessing Game Analysis
 
-## Overview
+## Program Overview
 
-This is an assembly language program written for x86 architecture in 16-bit mode. The program displays a series of country flags, each with three horizontal colored strips, along with their corresponding TLD (Top-Level Domain). It waits for a key press between each flag display and exits when either all flags have been shown or when the Escape key (ASCII 27) is pressed.
+This program is a flag guessing game written in x86 assembly language. The player is shown a series of 17 tricolor flags and must guess the correct two-letter Top-Level Domain (TLD) country code for each flag.
+
+## How It Works
+
+The program displays tricolor flags one by one, prompts the user to guess the corresponding country code (TLD), and keeps track of correct answers. Each flag is represented by three colored horizontal strips.
 
 ## Program Flow
 
-1. Set the starting address to 0x100H (typical for .COM files)
-2. Load the address of the data table into SI register
-3. Set a counter (BP) to 18 (total number of flags to display)
-4. For each flag:
-   - Clear the screen
-   - Load flag data (color information and TLD)
-   - Display the three-colored strips of the flag
-   - Print the TLD of the country
-   - Wait for a keypress
-   - Exit if ESC is pressed, otherwise continue to next flag
-5. Terminate the program
+1. Initialize the screen and counters
+2. Enter the main loop that processes each flag
+3. For each flag:
+   - Load the flag data (colors and TLD)
+   - Display the tricolor flag
+   - Read and check the user's answer
+4. Continue until all 17 flags are processed or user exits
+5. Exit the program
 
 ## Data Format
 
-The data for each flag is stored in a simple 3-byte structure:
-- First word (2 bytes): Contains color information for the three strips
-  - The first 9 bits (lower byte + bit 0 of higher byte) encode the colors
-  - Each strip color uses 3 bits, allowing for 8 possible colors per strip
-- Third byte: ASCII code for the second character of the TLD
-  - The first character of the TLD is derived from the higher byte of the first word
+The data for each flag is stored as 3 bytes:
+- First byte (16 bits): Contains the color information for all three strips
+  - Each strip's color is encoded in 3 bits (values 0-7)
+  - The bits are shifted after each strip is displayed
+- Third byte: Contains the two ASCII characters of the country's TLD
+
+Example: `db 0a0H, 0cbH, 64H`
+- `0a0H, 0cbH`: Color information for the three strips
+- `64H`: ASCII "d" (TLD is likely "de" for Germany)
 
 ## Subroutines
 
-### strip
-This subroutine draws a horizontal strip (band) of the flag in a specific color:
-- Inputs: BL register contains color information (only bits 0-2 are used)
-- Draws 4 rows of 10 characters each using the BIOS teletype output
-- Uses ASCII character 0xDB (█) as the drawing element
-- After drawing one strip, it clears BL to set color to black before returning
+### `clear_screen`
+- Sets video mode 13h (320x200, 256 colors)
+- Used to prepare the display for drawing flags
+
+### `load_data`
+- Loads the next flag's data from memory
+- Moves color information to BX register
+- Prepares the TLD characters for comparison
+
+### `display_flag`
+- Controls the display of the three colored strips
+- Uses CX as a counter to process each strip
+
+### `display_strip`
+- Draws a single colored strip of the flag
+- Uses the color value in BL (lowest 3 bits plus bit 3)
+- Draws characters using BIOS interrupt 10h
+
+### `read_answer`
+- Prompts the user to enter a two-letter TLD
+- Handles keyboard input including backspace
+- Compares the answer with the correct TLD
+- Updates the score if the answer is correct
+
+### `read_key`
+- Reads a single keystroke from the keyboard
+- Supports exiting the program via ESC key (27)
 
 ## Register Usage
 
-- SI: Source Index, points to the data being processed
-- BP: Base Pointer, used as a counter for the number of flags remaining
-- AX: Accumulator, used for multiple purposes:
-  - Setting video mode
-  - Loading data from memory
-  - BIOS/DOS function calls
-- BX: Base Register:
-  - BL stores color information for flag strips
-  - BH is used for video page in BIOS calls
-- CX: Counter, used for loop control:
-  - CH: Number of rows per strip (4)
-  - CL: Number of characters per row (10)
-- DI: Destination Index, used for writing to the TLD string
+- **SI**: Source Index, points to current data being processed
+- **BP**: Base Pointer, tracks the number of flags processed/answered
+- **BX**: Holds color information for the current flag
+  - BL: Current strip color (3 bits + bit 3)
+  - BH: Used for video operations
+- **CX**: Counter for loops
+  - CH: Used for vertical strip drawing
+  - CL: Used for horizontal strip drawing
+- **DI**: Destination Index, used when storing TLD
+- **AX**: Accumulator, multiple uses
+  - Used for BIOS/DOS calls
+  - Used for character display
+- **DX**: Data register
+  - Used for storing string addresses for DOS output
 
-## BIOS/DOS Interrupts Used
+## Memory Structures
 
-- INT 10H, AH=0D: Clear screen (set video mode)
-- INT 10H, AH=0E: Teletype output (display character)
-- INT 21H, AH=9: Print string (until $ character)
-- INT 16H, AH=0: Wait for keypress
-- INT 21H, AX=4C00H: Terminate program
+- **`print_tld`**: Storage for the correct two-letter TLD
+- **`result`**: Array storing the result indicators (correct/incorrect)
+- **`num`**: Counter showing current score (format "00/17")
+- **`data`**: Array of 3-byte structures for all 17 flags
 
-## Country Flags Represented
+## Technical Details
 
-The program displays 18 flags in sequence, each with their corresponding TLD (country code). Based on the data format, these would be various national flags with three horizontal bands of different colors, such as Germany (de), Russia (ru), Austria (at), etc.
-
-## Optimization Note
-
-The program is optimized for compactness, typical of assembly programs from the DOS era. It uses minimal memory and efficient register operations to maximize performance on legacy hardware.
+- The program runs in 16-bit real mode
+- It uses BIOS interrupt 10h for video output
+- It uses DOS interrupt 21h for keyboard input and string output
+- The tricolor flags are drawn using ASCII block characters (code 219, ▀)
+- The program is designed to be assembled and run as a COM file (starts at offset 100h)

@@ -1,43 +1,25 @@
-Explain what this program does,
-how it works,
-explain data format,
-subroutines,
-register usage.
-Provide the result in .md file.
---
+; generated from flagquiz.com, inlined some functions
 COUNT   equ 17
 	org 100H
         mov si,data
         xor bp,bp
-        call clear_screen
-next_flag:
-        call load_data
-        call display_flag
-        call read_answer
-        inc bp
-        cmp bp,COUNT
-        jne next_flag
-        jmp exit
-clear_screen:
+	; begin clear_screen
         mov ax,13H
         int 10H
-        ret
-load_data:
+	; end clear_screen
+next_flag:
+	; begin load_data
         lodsw
         mov bx,ax
         shr ah,1
         lodsb
         mov di,print_tld
         stosw
-        ret
-display_flag:
+	; end load_data
+	; begin display_flag
         mov cx,3
 next_tricolor:
-        call display_strip
-        shr bx,3
-        loop next_tricolor
-        ret
-display_strip:
+	; begin display_strip
         pusha
         mov ch,4
         and bl,7
@@ -54,8 +36,11 @@ display_strip:
         dec ch
         jne .half
         popa
-        ret
-read_answer:
+	; end display_strip
+        shr bx,3
+        loop next_tricolor
+	; end display_strip
+	; begin read_answer
         mov dx,print_question
         mov ah,9
         int 21H
@@ -94,7 +79,11 @@ read_answer:
         mov dx,print_answer
         mov ah,9
         int 21H
-        ret
+	; end read_key
+        inc bp
+        cmp bp,COUNT
+        jne next_flag
+        jmp exit
 read_key:
         mov ah,01H
         int 21H
@@ -121,21 +110,5 @@ result:
 num:
         db "00/17",10,10,'$'
 data:
+        %include "flagdata.inc"
 answer_buffer   equ $
-	db 0a0H, 0cbH, 64H
-	db 39H, 0e5H, 66H
-	db 17H, 0cfH, 62H
-	db 3aH, 0cbH, 69H
-	db 7cH, 0d8H, 6eH
-	db 3cH, 0e9H, 61H
-	db 0e7H, 0f3H, 62H
-	db 0fH, 0ebH, 72H
-	db 31H, 0dfH, 72H
-	db 0bcH, 0eaH, 68H
-	db 16H, 0e9H, 6cH
-	db 0ccH, 0e7H, 72H
-	db 0c1H, 0cbH, 65H
-	db 7aH, 0d8H, 73H
-	db 3cH, 0caH, 79H
-	db 72H, 0c2H, 67H
-	db 8cH, 0dbH, 61H

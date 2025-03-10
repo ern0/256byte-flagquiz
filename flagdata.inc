@@ -4,7 +4,6 @@
 	db 3aH, 0cbH, 69H    ; Ireland (.ie)
 	db 7cH, 0d8H, 6eH    ; Netherland (.nl)
 	db 3cH, 0e9H, 61H    ; Austria (.at)
-	db 34H, 0e7H, 65H    ; Estonia (.es)
 	db 0e7H, 0f3H, 62H   ; Belarus (.by)
 	db 0fH, 0ebH, 72H    ; Russia (.ru)
 	db 31H, 0dfH, 72H    ; Romania (.ro)

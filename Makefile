@@ -1,7 +1,7 @@
-flagquiz.com: flagquiz.asm flagdata.inc ai/prompt-full.txt
-	./inline.py flagquiz.asm > /tmp/flagquiz-inline.asm
-	nasm /tmp/flagquiz-inline.asm -o flagquiz.com
-	rm -f /tmp/flagquiz-inline.asm
+flagquiz.com: flagquiz.asm flagdata.inc ai/prompt-full.txt inliner.py
+	echo "; generated from flagquiz.com, inlined some functions" > flagquiz-inline.asm
+	./inliner.py flagquiz.asm >> flagquiz-inline.asm
+	nasm flagquiz-inline.asm -o flagquiz.com
 
 flagdata.inc: generate.py
 	./generate.py > flagdata.inc
