@@ -3,9 +3,13 @@
 ; https://github.com/ern0/256byte-flagquiz
 
 ;----------------------------------------------------------------------------
-COUNT   equ 17
+COUNT   equ 17                  ; number of flags
 
-	org 100H
+BS      equ 8                   ; some ASCII codes
+LF      equ 10
+ESC     equ 27
+
+	org 100H                ; .COM program
 
         mov si,data             ; reset data pointer
         mov di,result           ; reset result pointer
@@ -99,10 +103,10 @@ read_key:                       ; read key to AL
         mov ah,01H              ; read character
         int 21H
 
-        cmp al,27               ; exit on ESC
+        cmp al,ESC              ; check for escape key
         je  exit
 
-        cmp al,8                ; backspace
+        cmp al,BS               ; check for backspace key
         jne .ret                ; ZF is 0
 
         mov ah,9                ; print the correction
@@ -136,19 +140,19 @@ evaluate_answer:                ; check answer, print progress bar and number
 ;----------------------------------------------------------------------------
 inc2: ; increment 2-digit ASCII number, BX: pointer+1
 
-        inc byte [bx]
+        inc byte [bx]           ; increment low
 
-        cmp byte [bx],':'
+        cmp byte [bx],':'       ; check for overflow
         jne .below10
 
-        mov byte [bx],'0'
-        inc byte [bx - 1]
+        mov byte [bx],'0'       ; reset low
+        inc byte [bx - 1]       ; increment high
 
 .below10:
         ret
 ;----------------------------------------------------------------------------
 print_backspace:                ; backspace itself does not clear the char
-        db ' ',8,'$'
+        db ' ',BS,'$'
 print_question:
         db "Guess TLD:"
 print_space:                    ; interleaved space for backspace handling
@@ -156,7 +160,7 @@ print_space:                    ; interleaved space for backspace handling
 print_answer:
         db "? "
 print_tld:
-        db "tw!",10,"["
+        db "tw!",LF,"["
 result:
         %rep COUNT
             db 249              ; empty slot indicator (little dot)
@@ -166,9 +170,9 @@ num_pass:
         db "00/"
 num_total:
         db "00 /"
-        db (COUNT / 10) + 30H
-        db (COUNT % 10) + 30H
-        db 10,10,'$'
+        db (COUNT / LF) + 30H
+        db (COUNT % LF) + 30H
+        db LF,LF,'$'
 ;----------------------------------------------------------------------------
 data:
         %include "flagdata.inc"

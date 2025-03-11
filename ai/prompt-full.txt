@@ -5,8 +5,11 @@ subroutines,
 register usage.
 Provide the result in .md file.
 --
-COUNT   equ 17
-	org 100H
+COUNT   equ 17                  
+BS      equ 8                   
+LF      equ 10
+ESC     equ 27
+	org 100H                
         mov si,data             
         mov di,result           
         call clear_screen
@@ -75,9 +78,9 @@ read_answer:
 read_key:                       
         mov ah,01H              
         int 21H
-        cmp al,27               
+        cmp al,ESC              
         je  exit
-        cmp al,8                
+        cmp al,BS               
         jne .ret                
         mov ah,9                
         int 21H
@@ -101,15 +104,15 @@ evaluate_answer:
         int 21H
         ret
 inc2: 
-        inc byte [bx]
-        cmp byte [bx],':'
+        inc byte [bx]           
+        cmp byte [bx],':'       
         jne .below10
-        mov byte [bx],'0'
-        inc byte [bx - 1]
+        mov byte [bx],'0'       
+        inc byte [bx - 1]       
 .below10:
         ret
 print_backspace:                
-        db ' ',8,'$'
+        db ' ',BS,'$'
 print_question:
         db "Guess TLD:"
 print_space:                    
@@ -117,7 +120,7 @@ print_space:
 print_answer:
         db "? "
 print_tld:
-        db "tw!",10,"["
+        db "tw!",LF,"["
 result:
         %rep COUNT
             db 249              
@@ -127,9 +130,9 @@ num_pass:
         db "00/"
 num_total:
         db "00 /"
-        db (COUNT / 10) + 30H
-        db (COUNT % 10) + 30H
-        db 10,10,'$'
+        db (COUNT / LF) + 30H
+        db (COUNT % LF) + 30H
+        db LF,LF,'$'
 data:
 answer_buffer   equ $
 	db 0a0H, 0cbH, 64H   

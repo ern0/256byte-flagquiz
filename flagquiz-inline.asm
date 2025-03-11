@@ -1,4 +1,7 @@
 COUNT   equ 17
+BS      equ 8
+LF      equ 10
+ESC     equ 27
 	org 100H
         mov si,data
         mov di,result
@@ -75,9 +78,9 @@ exit:
 read_key:
         mov ah,01H
         int 21H
-        cmp al,27
+        cmp al,ESC
         je  exit
-        cmp al,8
+        cmp al,BS
         jne .ret
         mov ah,9
         int 21H
@@ -93,7 +96,7 @@ inc2:
 .below10:
         ret
 print_backspace:
-        db ' ',8,'$'
+        db ' ',BS,'$'
 print_question:
         db "Guess TLD:"
 print_space:
@@ -101,7 +104,7 @@ print_space:
 print_answer:
         db "? "
 print_tld:
-        db "tw!",10,"["
+        db "tw!",LF,"["
 result:
         %rep COUNT
             db 249
@@ -111,9 +114,9 @@ num_pass:
         db "00/"
 num_total:
         db "00 /"
-        db (COUNT / 10) + 30H
-        db (COUNT % 10) + 30H
-        db 10,10,'$'
+        db (COUNT / LF) + 30H
+        db (COUNT % LF) + 30H
+        db LF,LF,'$'
 data:
         %include "flagdata.inc"
 answer_buffer   equ $
