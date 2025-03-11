@@ -170,8 +170,8 @@ num_pass:
         db "00/"
 num_total:
         db "00 /"
-        db (COUNT / LF) + 30H
-        db (COUNT % LF) + 30H
+        db (COUNT / 10) + 30H
+        db (COUNT % 10) + 30H
         db LF,LF,'$'
 ;----------------------------------------------------------------------------
 data:
