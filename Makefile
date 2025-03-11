@@ -9,7 +9,7 @@ flagquiz.com: \
 			Makefile
 	./inliner.py flagquiz.asm > flagquiz-inline.asm
 	nasm flagquiz-inline.asm -o flagquiz.com
-	#rm -f flagquiz-inline.asm
+	rm -f flagquiz-inline.asm
 
 flagdata.inc: generate.py
 	./generate.py > flagdata.inc
