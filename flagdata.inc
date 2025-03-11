@@ -2,7 +2,7 @@
 	db 39H, 0e5H, 66H    ; France (.fr)
 	db 17H, 0cfH, 62H    ; Bulgaria (.bg)
 	db 3aH, 0cbH, 69H    ; Ireland (.ie)
-	db 7cH, 0d8H, 6eH    ; Netherland (.nl)
+	db 7cH, 0d8H, 6eH    ; Netherlands (.nl)
 	db 3cH, 0e9H, 61H    ; Austria (.at)
 	db 0e7H, 0f3H, 62H   ; Belarus (.by)
 	db 0fH, 0ebH, 72H    ; Russia (.ru)

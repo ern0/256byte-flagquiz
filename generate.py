@@ -25,7 +25,7 @@ class Analyze:
         self.flag("France", "fr", BLUE, WHITE, RED)
         self.flag("Bulgaria", "bg", WHITE, GREEN, RED)
         self.flag("Ireland", "ie", GREEN, WHITE, RED)
-        self.flag("Netherland", "nl", RED, WHITE, BLUE)
+        self.flag("Netherlands", "nl", RED, WHITE, BLUE)
         self.flag("Austria", "at", RED, WHITE, RED)
         self.flag("Belarus", "by", WHITE, RED, WHITE)
         self.flag("Russia", "ru", WHITE, BLUE, RED)

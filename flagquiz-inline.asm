@@ -1,21 +1,19 @@
-; generated from flagquiz.com, inlined some functions
 COUNT   equ 17
 	org 100H
         mov si,data
-        xor bp,bp
+        mov di,result
 	; begin clear_screen
         mov ax,13H
         int 10H
 	; end clear_screen
 next_flag:
-	; begin load_data
+	; begin load_flag_data
         lodsw
         mov bx,ax
         shr ah,1
         lodsb
-        mov di,print_tld
-        stosw
-	; end load_data
+        mov [print_tld],ax
+	; end load_flag_data
 	; begin display_flag
         mov cx,3
 next_tricolor:
@@ -45,53 +43,55 @@ next_tricolor:
         mov ah,9
         int 21H
 .k1:
+        mov dl,print_space-100H
         call read_key
-        mov dx,print_space
-        cmp al,8
-        je .print
-        mov dl,al
+        jz .k1
+        mov cl,al
 .k2:
+        mov dl,print_backspace-100H
         call read_key
-        cmp al,8
-        jne .s2
-.bs:
-        mov dx,print_backspace
-.print:
-        mov ah,9
-        int 21H
-        jmp .k1
-.s2:
-        mov dh,al
+        jz .k1
+        mov ch,al
+	; end read_key
+	; begin evaluate_answer
+        mov bx,num_pass+1
         mov al,'x'
-        cmp dx,word [print_tld]
+        cmp cx,[print_tld]
         jne .fail
-        mov ax,[num]
-        inc ah
-        cmp ah,':'
-        jne .below10
-        mov ah,'0'
-        inc al
-.below10:
-        mov [num],ax
+        call inc2
         mov al,251
 .fail:
-        mov DS:[BP + result],al
-        mov dx,print_answer
+        stosb
+        mov bl,num_total-100H+1
+        call inc2
+        mov dl,print_answer-100H
         mov ah,9
         int 21H
-	; end read_key
-        inc bp
-        cmp bp,COUNT
+	; end inc2
+        cmp si,data + (3 * COUNT)
         jne next_flag
-        jmp exit
+exit:
+	int 20H
 read_key:
         mov ah,01H
         int 21H
         cmp al,27
         je  exit
+        cmp al,8
+        jne .ret
+        mov ah,9
+        int 21H
+        xor ah,ah
+.ret:
         ret
-exit:
-	int 20H
+inc2:
+        inc byte [bx]
+        cmp byte [bx],':'
+        jne .below10
+        mov byte [bx],'0'
+        inc byte [bx - 1]
+.below10:
+        ret
 print_backspace:
         db ' ',8,'$'
 print_question:
@@ -101,14 +101,19 @@ print_space:
 print_answer:
         db "? "
 print_tld:
-        db "cc!",10,"["
+        db "tw!",10,"["
 result:
         %rep COUNT
             db 249
         %endrep
         db "] "
-num:
-        db "00/17",10,10,'$'
+num_pass:
+        db "00/"
+num_total:
+        db "00 /"
+        db (COUNT / 10) + 30H
+        db (COUNT % 10) + 30H
+        db 10,10,'$'
 data:
         %include "flagdata.inc"
 answer_buffer   equ $

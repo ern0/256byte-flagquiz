@@ -7,135 +7,145 @@ Provide the result in .md file.
 --
 COUNT   equ 17
 	org 100H
-        mov si,data
-        xor bp,bp
+        mov si,data             
+        mov di,result           
         call clear_screen
 next_flag:
-        call load_data
+        call load_flag_data
         call display_flag
         call read_answer
-        inc bp
-        cmp bp,COUNT
-        jne next_flag
-        jmp exit
+        call evaluate_answer
+        cmp si,data + (3 * COUNT)
+        jne next_flag           
+exit:
+	int 20H
 clear_screen:
-        mov ax,13H
+        mov ax,13H              
         int 10H
         ret
-load_data:
-        lodsw
-        mov bx,ax
-        shr ah,1
-        lodsb
-        mov di,print_tld
-        stosw
-        ret
-display_flag:
-        mov cx,3
+load_flag_data:
+        lodsw                   
+        mov bx,ax               
+        shr ah,1                
+        lodsb                   
+        mov [print_tld],ax      
+        ret                     
+display_flag:                   
+        mov cx,3                
 next_tricolor:
-        call display_strip
-        shr bx,3
-        loop next_tricolor
+        call display_strip      
+        shr bx,3                
+        loop next_tricolor      
         ret
-display_strip:
-        pusha
-        mov ch,4
-        and bl,7
-        or bl,8
+display_strip:                  
+        pusha                   
+        mov ch,4                
+        and bl,7                
+        or bl,8                 
 .half:
-        mov cl,10
+        mov cl,10               
 .char:
-        xor bh,bh
-        mov ax,0edbH
+        xor bh,bh               
+        mov ax,0edbH            
         int 10H
-        dec cl
+        dec cl                  
         jne .char
-        xor bl,bl
-        dec ch
+        xor bl,bl               
+        dec ch                  
         jne .half
-        popa
+        popa                    
         ret
-read_answer:
-        mov dx,print_question
+read_answer:                    
+        mov dx,print_question   
         mov ah,9
         int 21H
 .k1:
-        call read_key
-        mov dx,print_space
-        cmp al,8
-        je .print
-        mov dl,al
+        mov dl,print_space-100H 
+                                
+        call read_key           
+        jz .k1                  
+        mov cl,al               
 .k2:
-        call read_key
-        cmp al,8
-        jne .s2
-.bs:
-        mov dx,print_backspace
-.print:
-        mov ah,9
+        mov dl,print_backspace-100H 
+                                
+        call read_key           
+        jz .k1                  
+        mov ch,al               
+        ret                     
+read_key:                       
+        mov ah,01H              
         int 21H
-        jmp .k1
-.s2:
-        mov dh,al
-        mov al,'x'
-        cmp dx,word [print_tld]
-        jne .fail
-        mov ax,[num]
-        inc ah
-        cmp ah,':'
-        jne .below10
-        mov ah,'0'
-        inc al
-.below10:
-        mov [num],ax
-        mov al,251
-.fail:
-        mov DS:[BP + result],al
-        mov dx,print_answer
-        mov ah,9
-        int 21H
-        ret
-read_key:
-        mov ah,01H
-        int 21H
-        cmp al,27
+        cmp al,27               
         je  exit
+        cmp al,8                
+        jne .ret                
+        mov ah,9                
+        int 21H
+        xor ah,ah               
+.ret:
+        ret                     
+evaluate_answer:                
+        mov bx,num_pass+1       
+        mov al,'x'              
+        cmp cx,[print_tld]      
+        jne .fail
+        call inc2               
+        mov al,251              
+.fail:
+        stosb                   
+        mov bl,num_total-100H+1 
+        call inc2               
+        mov dl,print_answer-100H 
+                                
+        mov ah,9
+        int 21H
         ret
-exit:
-	int 20H
-print_backspace:
+inc2: 
+        inc byte [bx]
+        cmp byte [bx],':'
+        jne .below10
+        mov byte [bx],'0'
+        inc byte [bx - 1]
+.below10:
+        ret
+print_backspace:                
         db ' ',8,'$'
 print_question:
         db "Guess TLD:"
-print_space:
+print_space:                    
         db " $"
 print_answer:
         db "? "
 print_tld:
-        db "cc!",10,"["
+        db "tw!",10,"["
 result:
         %rep COUNT
-            db 249
+            db 249              
         %endrep
         db "] "
-num:
-        db "00/17",10,10,'$'
+num_pass:
+        db "00/"
+num_total:
+        db "00 /"
+        db (COUNT / 10) + 30H
+        db (COUNT % 10) + 30H
+        db 10,10,'$'
 data:
 answer_buffer   equ $
-	db 0a0H, 0cbH, 64H
-	db 39H, 0e5H, 66H
-	db 17H, 0cfH, 62H
-	db 3aH, 0cbH, 69H
-	db 7cH, 0d8H, 6eH
-	db 3cH, 0e9H, 61H
-	db 0e7H, 0f3H, 62H
-	db 0fH, 0ebH, 72H
-	db 31H, 0dfH, 72H
-	db 0bcH, 0eaH, 68H
-	db 16H, 0e9H, 6cH
-	db 0ccH, 0e7H, 72H
-	db 0c1H, 0cbH, 65H
-	db 7aH, 0d8H, 73H
-	db 3cH, 0caH, 79H
-	db 72H, 0c2H, 67H
-	db 8cH, 0dbH, 61H
+	db 0a0H, 0cbH, 64H   
+	db 39H, 0e5H, 66H    
+	db 17H, 0cfH, 62H    
+	db 3aH, 0cbH, 69H    
+	db 7cH, 0d8H, 6eH    
+	db 3cH, 0e9H, 61H    
+	db 0e7H, 0f3H, 62H   
+	db 0fH, 0ebH, 72H    
+	db 31H, 0dfH, 72H    
+	db 0bcH, 0eaH, 68H   
+	db 16H, 0e9H, 6cH    
+	db 0ccH, 0e7H, 72H   
+	db 0c1H, 0cbH, 65H   
+	db 7aH, 0d8H, 73H    
+	db 3cH, 0caH, 79H    
+	db 72H, 0c2H, 67H    
+	db 8cH, 0dbH, 61H    

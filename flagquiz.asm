@@ -1,4 +1,4 @@
-; Flag Quiz - created by ern0/Abaddon, 2025.03.09
+; Flag Quiz - created by ern0/Abaddon, 2025.03.11
 ; A 256-byte game for MS-DOS written in clean code assembly
 ; https://github.com/ern0/256byte-flagquiz
 
@@ -8,43 +8,42 @@ COUNT   equ 17
 	org 100H
 
         mov si,data             ; reset data pointer
-        xor bp,bp               ; reset data item counter
+        mov di,result           ; reset result pointer
 
         call clear_screen
+
 next_flag:
-        call load_data
+        call load_flag_data
         call display_flag
         call read_answer
+        call evaluate_answer
 
-        inc bp                  ; go with next flag, if any
-        cmp bp,COUNT
-        jne next_flag
-
-        jmp exit
+        cmp si,data + (3 * COUNT)
+        jne next_flag           ; next round or fall exit
+;----------------------------------------------------------------------------
+exit:
+	int 20H
 ;----------------------------------------------------------------------------
 clear_screen:
 
         mov ax,13H              ; set video mode and clear screen
         int 10H
-
         ret
 ;----------------------------------------------------------------------------
-load_data:
+load_flag_data:
 
         lodsw                   ; AL: color, AH: shifted tld-2 and 1-bit color
         mov bx,ax               ; copy 9-bit color to BX
         shr ah,1                ; shift back tld-2
         lodsb                   ; load tld-1, so AX now contains full tld
 
-        mov di,print_tld        ; set DI to print area
-        stosw                   ; copy to tld to print area
+        mov [print_tld],ax      ; copy tld to print area
 
-        ret
+        ret                     ; BX contains the 9-bit flag data
 ;----------------------------------------------------------------------------
-display_flag:
+display_flag:                   ; display 3x 3-bit strips from BX
 
         mov cx,3                ; number of colors in a flag
-
 next_tricolor:
         call display_strip      ; display one strip, BL will be masked to 3-bit
         shr bx,3                ; shift next 3-bit
@@ -52,9 +51,9 @@ next_tricolor:
 
         ret
 ;----------------------------------------------------------------------------
-display_strip:
+display_strip:                  ; display 3-bit strip from BX LSBs
 
-        pusha                   ; save registers
+        pusha                   ; preserve BX and CX
 
         mov ch,4                ; number of strip segments: 4
         and bl,7                ; adjust color: keep only low 3 bits
@@ -75,80 +74,101 @@ display_strip:
         popa                    ; restore registers
         ret
 ;----------------------------------------------------------------------------
-read_answer:
+read_answer:                    ; read and print answer, backspace handling
 
         mov dx,print_question   ; display question
         mov ah,9
         int 21H
 .k1:
+        mov dl,print_space-100H ; half ptr
+                                ; message for backspace
         call read_key           ; read first char
-        mov dx,print_space
-        cmp al,8
-        je .print
-        mov dl,al               ; store first char
+        jz .k1                  ; again, if backspace
+        mov cl,al               ; store first char
 .k2:
+        mov dl,print_backspace-100H ; half ptr
+                                ; message for backspace
         call read_key           ; read second char
-        cmp al,8                ; check for backspace
-        jne .s2                 ; if not, skip to .s2
-.bs:
-        mov dx,print_backspace  ; clear character (space + BS)
-.print:
-        mov ah,9
-        int 21H
-        jmp .k1                 ; read first char again
-.s2:
-        mov dh,al               ; store second char, now DX contains both
+        jz .k1                  ; again, if backspace
+        mov ch,al               ; store second char, now DX contains both
 
-        mov al,'x'              ; fail indicator
-        cmp dx,word [print_tld] ; compare DX with correct answer
-        jne .fail
-
-        mov ax,[num]            ; load 2-digit result counter
-        inc ah                  ; increment low digit
-        cmp ah,':'              ; check overflow: '9' -> ':'
-        jne .below10
-        mov ah,'0'              ; reset low digit
-        inc al                  ; increment high digit
-.below10:
-        mov [num],ax
-        mov al,251              ; pass indicator (pipe)
-
-.fail:
-        mov DS:[BP + result],al ; copy indicator to the actual result position
-
-        mov dx,print_answer     ; display the result
-        mov ah,9
-        int 21H
-
-        ret
+        ret                     ; read keys are in CX
 ;----------------------------------------------------------------------------
-read_key:
+read_key:                       ; read key to AL
+
         mov ah,01H              ; read character
         int 21H
+
         cmp al,27               ; exit on ESC
         je  exit
+
+        cmp al,8                ; backspace
+        jne .ret                ; ZF is 0
+
+        mov ah,9                ; print the correction
+        int 21H
+        xor ah,ah               ; set ZF to 1
+.ret:
+        ret                     ; key: AL, ZF=1: backspace
+;----------------------------------------------------------------------------
+evaluate_answer:                ; check answer, print progress bar and number
+
+        mov bx,num_pass+1       ; pre-load pass ptr+1
+
+        mov al,'x'              ; fail indicator
+        cmp cx,[print_tld]      ; compare DX with correct answer
+        jne .fail
+
+        call inc2               ; increment pass value
+        mov al,251              ; pass indicator (pipe)
+.fail:
+        stosb                   ; copy indicator to the actual result position
+
+        mov bl,num_total-100H+1 ; half ptr+1
+        call inc2               ; increment number of total
+
+        mov dl,print_answer-100H ; half ptr
+                                ; display the result
+        mov ah,9
+        int 21H
+
         ret
 ;----------------------------------------------------------------------------
-exit:
-	int 20H
+inc2: ; increment 2-digit ASCII number, BX: pointer+1
+
+        inc byte [bx]
+
+        cmp byte [bx],':'
+        jne .below10
+
+        mov byte [bx],'0'
+        inc byte [bx - 1]
+
+.below10:
+        ret
 ;----------------------------------------------------------------------------
-print_backspace:
+print_backspace:                ; backspace itself does not clear the char
         db ' ',8,'$'
 print_question:
         db "Guess TLD:"
-print_space:
+print_space:                    ; interleaved space for backspace handling
         db " $"
 print_answer:
         db "? "
 print_tld:
-        db "cc!",10,"["
+        db "tw!",10,"["
 result:
         %rep COUNT
             db 249              ; empty slot indicator (little dot)
         %endrep
         db "] "
-num:
-        db "00/17",10,10,'$'
+num_pass:
+        db "00/"
+num_total:
+        db "00 /"
+        db (COUNT / 10) + 30H
+        db (COUNT % 10) + 30H
+        db 10,10,'$'
 ;----------------------------------------------------------------------------
 data:
         %include "flagdata.inc"

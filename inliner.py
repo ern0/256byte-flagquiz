@@ -70,15 +70,6 @@ class Inliner:
 
         return is_sub
 
-    def check_if_ret(self):
-
-        is_ret = False
-
-        if self.line.strip().split(" ")[0] == "ret":
-            is_ret = True
-
-        return is_ret
-
     def count_refs(self):
 
         for self.line in self.lines:
@@ -130,7 +121,13 @@ class Inliner:
 
     def check_if_ret(self):
 
-        return self.line.strip().split(" ")[0] == "ret"
+        if self.line.strip() == "int 20H":
+            return True
+
+        if self.line.strip().split(" ")[0] == "ret":
+            return True
+
+        return False
 
 if __name__ == "__main__":
     Inliner().main()
