@@ -24,7 +24,7 @@ so these are what they produced, without any change:
 - [OpenAI ChatGPT](ai-chatgpt.md) [>>](https://openai.com/)
 - [DeepSeek](ai-deepseek.md) [>>](https://chat.deepseek.com/)
 - [Claude 3.7 Sonnet](ai-claude.md) [>>](https://claude.ai/)
-- [MS CoPilot](ai-copilot.md) [>>](https://copilot.microsoft.com/)
+- [MS CoPilot](ai-ms_copilot.md) [>>](https://copilot.microsoft.com/)
 - [Gemini 2.0](ai-gemini.md) [>>](https://gemini.google.com/)
 
 They did a pretty good job, except data explanation,
