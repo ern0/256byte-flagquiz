@@ -36,8 +36,10 @@ clean:
 	rm -f flagquiz.com
 	rm -f flagdata.inc
 	rm -f ai/prompt-full.txt
+	rm -f web/flagquiz.zip
 
 all: \
 			clean
 			flagquiz.com
 			ai/prompt-full.txt
+			web/flagquiz.zip

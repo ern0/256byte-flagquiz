@@ -1,4 +1,16 @@
-# 256byte-flagquiz
-256-byte MS-DOS game: Flag Quiz
+# 256-byte game for PC-DOS: Flag Quiz
 
-https://linkbroker.hu/stuff/flagquiz/
+(Play in browser!)[https://linkbroker.hu/stuff/flagquiz/]
+
+## Motivation
+
+I wanted to make something that doesn't exist yet.
+I think, the combination of the following requirements
+meets the criteria:
+- 256-byte program for MS-DOS,
+- game,
+- which has a database,
+- written in clean code style in assembly language.
+
+I also wanted to know [ai/README.md](how well AI tools understand assembly code). Spoiler: they've done a pretty good job.
+
