@@ -21,14 +21,14 @@ Provide the result in .md file.
 I've asked AIs to provide the result in markdown format,
 so these are what they produced, without any change:
 
-- [OpenAI ChatGPT](ai-chatgpt.md) - https://openai.com/
-- [DeepSeek](ai-deepseek.md) - https://chat.deepseek.com/
-- [Claude 3.7 Sonnet](ai-claude.md) - https://claude.ai/
-- [MS CoPilot](ai-copilot.md) - https://copilot.microsoft.com/
-- [Gemini 2.0](ai-gemini.md) - https://gemini.google.com/
+- [OpenAI ChatGPT](ai-chatgpt.md) [>>](https://openai.com/)
+- [DeepSeek](ai-deepseek.md) [>>](https://chat.deepseek.com/)
+- [Claude 3.7 Sonnet](ai-claude.md) [>>](https://claude.ai/)
+- [MS CoPilot](ai-copilot.md) [>>](https://copilot.microsoft.com/)
+- [Gemini 2.0](ai-gemini.md) [>>](https://gemini.google.com/)
 
 They did a pretty good job, except data explanation,
-but some further chat to guide them to the right answer.
+but some further guide helps them to provide the right answer.
 I didn't do that,
 my goal was to see what they could do on their own.
 
