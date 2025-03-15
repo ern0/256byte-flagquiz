@@ -1,6 +1,6 @@
 @echo off
 cls
-flagquiz
+flagquiz.com
 echo --
 pause
 exit

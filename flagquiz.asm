@@ -1,13 +1,18 @@
-; Flag Quiz - created by ern0/Abaddon, 2025.03.11
+; Flag Quiz - created by ern0/Abaddon, 2025.03.15
 ; A 256-byte game for MS-DOS written in clean code assembly
 ; https://github.com/ern0/256byte-flagquiz
 
 ;----------------------------------------------------------------------------
 COUNT   equ 17                  ; number of flags
 
-BS      equ 8                   ; some ASCII codes
-LF      equ 10
-ESC     equ 27
+NONE_SIGN       equ '.'         ; indicator characters
+PASS_SIGN       equ 'X'
+FAIL_SIGN       equ '-'
+
+BS              equ 8           ; some ASCII codes
+CR              equ 13
+LF              equ 10
+ESC             equ 27
 
 	org 100H                ; .COM program
 
@@ -119,17 +124,17 @@ evaluate_answer:                ; check answer, print progress bar and number
 
         mov bx,num_pass+1       ; pre-load pass ptr+1
 
-        mov al,'x'              ; fail indicator
+        mov al,FAIL_SIGN        ; fail indicator
         cmp cx,[print_tld]      ; compare DX with correct answer
         jne .fail
 
         call inc2               ; increment pass value
-        mov al,251              ; pass indicator (pipe)
+        mov al,PASS_SIGN        ; pass indicator
 .fail:
         stosb                   ; copy indicator to the actual result position
 
-        mov bl,num_total-100H+1 ; half ptr+1
-        call inc2               ; increment number of total
+        mov bl,num_round-100H+1 ; half ptr+1
+        call inc2               ; increment number of rounds
 
         mov dl,print_answer-100H ; half ptr
                                 ; display the result
@@ -153,26 +158,29 @@ inc2: ; increment 2-digit ASCII number, BX: pointer+1
 ;----------------------------------------------------------------------------
 print_backspace:                ; backspace itself does not clear the char
         db ' ',BS,'$'
+
 print_question:
-        db "Guess TLD:"
+num_round:
+        db "01/"
+        db (COUNT / 10) + 30H
+        db (COUNT % 10) + 30H
+        db " Guess TLD:"
 print_space:                    ; interleaved space for backspace handling
         db " $"
 print_answer:
         db "? "
 print_tld:
-        db "tw!",LF,"["
+        db "tw!"
+        db CR,LF
+        db "["
 result:
         %rep COUNT
-            db 249              ; empty slot indicator (little dot)
+            db NONE_SIGN        ; empty slot indicator
         %endrep
         db "] "
 num_pass:
-        db "00/"
-num_total:
-        db "00 /"
-        db (COUNT / 10) + 30H
-        db (COUNT % 10) + 30H
-        db LF,LF,'$'
+        db "00"
+        db CR,LF,LF,'$'
 ;----------------------------------------------------------------------------
 data:
         %include "flagdata.inc"

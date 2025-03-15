@@ -1,113 +1,86 @@
 # Assembly Program Analysis
 
-## Overview
+## Main Function
 
-This program is a flag guessing game that shows tricolor flag patterns and asks the user to guess the corresponding Top-Level Domain (TLD) country code. The program:
+This program is a flag guessing game where the user needs to identify country TLDs (Top-Level Domains) based on displayed tricolor flags. The program shows a sequence of 17 different flags and asks the player to guess the corresponding two-letter country codes.
 
-1. Displays a sequence of 17 national flags as colored strips
-2. Prompts the user to guess the two-letter TLD code for each flag
-3. Tracks correct/incorrect answers and maintains a running score
-4. Exits when all flags have been shown or when ESC is pressed
+## Program Flow
 
-## Program Structure
+1. Initialize pointers to data and result areas
+2. Clear the screen
+3. For each flag (17 total):
+   - Load flag data (colors and correct TLD)
+   - Display the tricolor flag
+   - Read the user's two-character guess
+   - Evaluate if the answer is correct
+   - Update the score display
+4. Exit the program when all flags are processed or if ESC is pressed
 
-### Memory Organization
+## Data Format
 
-- `org 100H` - Program is loaded at offset 100H (COM file format)
-- Uses a simple data structure to store flag colors and correct answers
-- Maintains a result buffer to track user performance
+### Flag Data Structure
+Each flag is represented by 3 bytes:
+- First two bytes (word): Contains the RGB color values for the three strips of the flag
+- Third byte: Contains the two ASCII characters of the correct TLD (compressed)
 
-### Data Format
+### Color Encoding
+The flag colors are encoded in the first two bytes (16 bits):
+- Each color is represented by 3 bits (8 possible colors)
+- The colors are arranged from bottom to top (least significant bits represent the bottom strip)
+- Colors appear to be using a 3-bit EGA/CGA-style palette with an additional intensity bit
 
-Each flag entry in the data section consists of 3 bytes:
-- **Bytes 1-2**: A 16-bit word containing 9 bits of color information (3 bits per color strip)
-- **Byte 3**: ASCII code of the second letter of the TLD
+### Result Display
+The program tracks:
+- Current question number (01-17)
+- A visual result indicator showing X for correct answers and - for incorrect answers
+- Running count of correct answers
 
-The first letter of the TLD is encoded within the color word (in the upper bits of AH register).
+## Subroutines
 
-### Main Routine
+### `clear_screen`
+Sets video mode 13h (320x200, 256 colors)
 
-The main program flow:
-```
-Initialize pointers
-Clear screen
-For each flag:
-  - Load flag data
-  - Display flag
-  - Read user answer
-  - Evaluate answer
-  - Move to next flag
-Exit
-```
+### `load_flag_data`
+- Loads the next flag's color data into BX
+- Extracts and processes the TLD data
 
-### Subroutines
+### `display_flag`
+- Calls `display_strip` three times to show each color of the tricolor flag
+- Shifts BX register to get the next color for each call
 
-#### `clear_screen`
-Sets video mode 13h (320x200, 256 colors) via INT 10H.
+### `display_strip`
+- Displays a colored strip using INT 10h function 0Eh
+- Each strip consists of 4 rows of 10 colored blocks
 
-#### `load_flag_data`
-- Loads a word (color information) into BX
-- Extracts the first letter of the TLD by shifting AH right by 1 bit
-- Loads the second letter of the TLD from the third byte
-- Stores the two-character TLD in the `print_tld` memory location
-
-#### `display_flag`
-Draws a tricolor flag by calling `display_strip` three times, shifting BX right by 3 bits between each call to get the next color.
-
-#### `display_strip`
-Displays a colored strip of the flag:
-- Uses color code stored in BL (bits 0-2, plus bit 3 always set)
-- Draws a rectangular section using INT 10H function 0Eh with character 0DBh (full block)
-- Each strip is 10 characters wide and 4 characters tall
-
-#### `read_answer`
-Prompts the user and reads two characters of input:
-- First character stored in CL
-- Second character stored in CH
-- Handles backspace for correction
+### `read_answer`
+- Displays the question prompt
+- Reads two keystrokes from the user (country code)
+- Allows backspace for corrections
 - Exits program if ESC key is pressed
 
-#### `evaluate_answer`
-Compares user's input (in CX) with the correct TLD (in `print_tld`):
-- Updates score counters (passed/total)
-- Adds a character to the result buffer (✓ for correct, 'x' for incorrect)
-- Displays the correct answer
+### `evaluate_answer`
+- Compares user input with the correct TLD
+- Updates score counter if correct
+- Marks the result as PASS_SIGN (X) or FAIL_SIGN (-)
+- Increments the question counter
 
-#### `inc2`
-Helper function to increment a two-digit decimal counter:
-- Handles carrying to the tens digit when units digit reaches 10
-- Used for both "pass" and "total" counters
+### `inc2`
+- Helper function to increment a two-digit decimal counter
+- Handles the carry from units to tens place
 
-### Register Usage
+## Register Usage
 
-- **SI**: Source index pointer for flag data
-- **DI**: Destination index pointer for results
-- **BX**: Stores flag color information; BL used for current color
-- **CX**: Used as loop counter in display routines; stores user input during answer evaluation
-- **AX**: Multi-purpose; used for INT calls and data manipulation
-- **DX**: Used for pointing to strings for display
+- **SI**: Source Index - Points to the current flag data
+- **DI**: Destination Index - Points to the current position in the result display
+- **BX**: Holds the color data for the current flag
+- **CX**: Used both as a loop counter and to store the user's input
+- **DX**: Used for displaying strings via INT 21h
+- **AX**: Used for various functions, particularly for INT calls
+- **AH/AL**: Specific portions of AX used for function numbers and return values
 
-## Command and ASCII Values
+## Memory Organization
 
-- **COUNT = 17**: Total number of flags in the quiz
-- **BS = 8**: ASCII for Backspace
-- **LF = 10**: ASCII for Line Feed
-- **ESC = 27**: ASCII for Escape key
-
-## Display Techniques
-
-The program uses:
-- INT 10H/AX=13H to set the video mode
-- INT 10H/AH=0EH to output characters (with color in BL)
-- INT 21H/AH=9 to display '$'-terminated strings
-- INT 21H/AH=1 to read keyboard input with echo
-
-## Data Section
-
-The data section contains:
-1. Prompt and message strings
-2. A buffer for storing results (✓/x for each answer)
-3. Score counters
-4. Encoded flag data for 17 countries
-
-The flag database contains encoded information for countries like tw (Taiwan), fr (France), it (Italy), etc., represented by their tricolor flags and TLD codes.
+- Program starts at offset 100h (COM file format)
+- `data` section contains the encoded flag information
+- `result` area holds the X/- indicators for correct/incorrect answers
+- Various string constants for UI display

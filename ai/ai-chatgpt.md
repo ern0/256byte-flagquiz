@@ -1,51 +1,60 @@
-# Assembly Program Overview
+# Assembly Program Analysis
 
-## Program Description
-This assembly language program is designed to display a series of flags (represented by TLDs - Top Level Domains), prompt the user to guess the TLD, evaluate the answer, and keep track of the number of correct and total answers.
+## Main Function
+This program is a simple quiz that asks the user to guess the Top-Level Domain (TLD) based on a given flag. It:
+1. Loads flag data from memory.
+2. Displays the flag using graphical routines.
+3. Prompts the user to enter a guess.
+4. Evaluates the correctness of the guess.
+5. Updates the results accordingly.
+6. Loops through multiple flag entries before exiting.
 
-## How It Works
-1. **Initialize the Screen**: The program begins by clearing the screen.
-2. **Load and Display Flags**: It iterates through a list of encoded TLDs, loading each one and displaying it.
-3. **User Input**: The program prompts the user to guess the TLD, reads the input, and checks if the answer is correct.
-4. **Evaluation**: If the answer is correct, it updates the count of correct answers.
-5. **Loop**: The program continues looping through the flags until all have been processed or the user exits.
+## Program Flow
+1. **Initialization**: The program starts at `org 100H` and initializes registers `SI` (data source) and `DI` (result storage).
+2. **Screen Clearing**: Calls `clear_screen` to reset the display.
+3. **Main Loop (next_flag)**:
+   - Calls `load_flag_data` to fetch flag details.
+   - Calls `display_flag` to render the flag.
+   - Calls `read_answer` to get user input.
+   - Calls `evaluate_answer` to check correctness.
+   - Checks if all flags are processed; loops if not.
+4. **Exit**: Calls interrupt `int 20H` to terminate execution.
 
 ## Data Format
-The program uses various data formats, specifically:
-- **Counts**: Some constants like `COUNT`, `BS` (backspace), `LF` (line feed), and `ESC` (escape character) are defined.
-- **Strings**: Strings for prompts and messages are defined using `db` (define byte).
-- **Encoded Data**: The TLDs are stored as byte sequences in the `data` section, relying on specific encoding for retrieval.
+- `data`: Stores encoded flag data in three-byte sequences.
+- `result`: Stores user responses as `NONE_SIGN`, `PASS_SIGN`, or `FAIL_SIGN`.
+- `num_pass`: Tracks the number of correct answers.
+- `num_round`: Keeps count of rounds played.
 
 ## Subroutines
-### 1. `clear_screen`
-- Clears the screen using BIOS interrupt `10H`.
-- Changes video mode to mode `13H`.
-
-### 2. `load_flag_data`
-- Loads flag data from the `data` buffer using `lodsw` (load word from DS).
-- Shifts and retrieves the necessary bytes for display.
-
-### 3. `display_flag`
-- Displays each flag's colors in sequence using the `display_strip` subroutine, which prints color strips based on the encoded TLD.
-
-### 4. `read_answer`
-- Displays a question prompt and collects user input, allowing for backspace corrections.
-
-### 5. `evaluate_answer`
-- Compares the user's answer against the correct TLD.
-- If correct, increments the pass count; otherwise, indicates a failure.
-
-### 6. `inc2`
-- A helper method that increments a count and properly formats it when surpassing double digits.
-
-### 7. `read_key`
-- Reads a single character input from the user.
+- **clear_screen**: Uses `int 10H` to clear the screen.
+- **load_flag_data**:
+  - Loads a two-byte color code and a single-byte character.
+  - Stores the character in `print_tld`.
+- **display_flag**:
+  - Calls `display_strip` three times for tricolor rendering.
+- **display_strip**:
+  - Draws flag segments using BIOS interrupts.
+- **read_answer**:
+  - Prints a prompt and reads a two-character user input.
+- **read_key**:
+  - Handles key press detection and ESC key termination.
+- **evaluate_answer**:
+  - Compares the user input with the correct TLD.
+  - Updates `num_pass` and displays feedback.
+- **inc2**:
+  - Increments numerical counters in `num_pass` and `num_round`.
 
 ## Register Usage
-- `AX`, `BX`, `CX`, `DX`: Utilized for data manipulation, display control, and user input.
-- `SI`, `DI`: Used for pointer arithmetic and data movement between buffers.
-- `CH`, `CL`: Employed for loop control when displaying color strips.
-- `AH` and `AL`: Used for interrupt calls and storing temporarily read data.
+- `SI`: Points to flag data.
+- `DI`: Points to result storage.
+- `BX`: Stores flag colors and numerical values.
+- `AX`: Temporary storage for calculations and BIOS calls.
+- `CX`: Loop counter for display functions.
+- `DX`: Holds addresses for output strings.
+- `AH`: Used for BIOS interrupts.
+- `AL`: Stores user input and comparison values.
 
 ## Conclusion
-This assembly program effectively manages user interaction to guess TLDs, maintains a count of attempts and successes, and utilizes system calls for screen management and input handling. It exemplifies basic programming concepts in assembly, such as loops, conditionals, and data handling.
+This program is a simple interactive game that tests the user's knowledge of TLDs. It follows a structured flow with modular subroutines for display, input handling, and evaluation. Registers are used efficiently to manipulate data and interact with BIOS services.
+

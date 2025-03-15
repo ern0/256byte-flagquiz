@@ -1,14 +1,19 @@
-Explain what this program does,
-how it works,
-explain data format,
+Explain this program,
+its main function,
+program flow,
+data format,
 subroutines,
 register usage.
 Provide the result in .md file.
 --
 COUNT   equ 17                  
-BS      equ 8                   
-LF      equ 10
-ESC     equ 27
+NONE_SIGN       equ '.'         
+PASS_SIGN       equ 'X'
+FAIL_SIGN       equ '-'
+BS              equ 8           
+CR              equ 13
+LF              equ 10
+ESC             equ 27
 	org 100H                
         mov si,data             
         mov di,result           
@@ -89,14 +94,14 @@ read_key:
         ret                     
 evaluate_answer:                
         mov bx,num_pass+1       
-        mov al,'x'              
+        mov al,FAIL_SIGN        
         cmp cx,[print_tld]      
         jne .fail
         call inc2               
-        mov al,251              
+        mov al,PASS_SIGN        
 .fail:
         stosb                   
-        mov bl,num_total-100H+1 
+        mov bl,num_round-100H+1 
         call inc2               
         mov dl,print_answer-100H 
                                 
@@ -114,25 +119,27 @@ inc2:
 print_backspace:                
         db ' ',BS,'$'
 print_question:
-        db "Guess TLD:"
+num_round:
+        db "01/"
+        db (COUNT / 10) + 30H
+        db (COUNT % 10) + 30H
+        db " Guess TLD:"
 print_space:                    
         db " $"
 print_answer:
         db "? "
 print_tld:
-        db "tw!",LF,"["
+        db "tw!"
+        db CR,LF
+        db "["
 result:
         %rep COUNT
-            db 249              
+            db NONE_SIGN        
         %endrep
         db "] "
 num_pass:
-        db "00/"
-num_total:
-        db "00 /"
-        db (COUNT / LF) + 30H
-        db (COUNT % LF) + 30H
-        db LF,LF,'$'
+        db "00"
+        db CR,LF,LF,'$'
 data:
 answer_buffer   equ $
 	db 0a0H, 0cbH, 64H   

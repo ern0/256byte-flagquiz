@@ -1,6 +1,7 @@
-Explain what this program does,
-how it works,
-explain data format,
+Explain this program,
+its main function,
+program flow,
+data format,
 subroutines,
 register usage.
 Provide the result in .md file.
