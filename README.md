@@ -1,6 +1,6 @@
 # 256-byte game for PC-DOS: Flag Quiz
 
-(Play in browser!)[https://linkbroker.hu/stuff/flagquiz/]
+[Play in browser!](https://linkbroker.hu/stuff/flagquiz/)
 
 ## Motivation
 
@@ -12,5 +12,5 @@ meets the criteria:
 - which has a database,
 - written in clean code style in assembly language.
 
-I also wanted to know [ai/README.md](how well AI tools understand assembly code). Spoiler: they've done a pretty good job.
+I also wanted to know [how well AI tools understand assembly code](ai/README.md). Spoiler: they've done a pretty good job.
 
