@@ -4,11 +4,13 @@
 
 ```
 Flag Quiz by ern0/Abaddon, a 256-byte DOS game
-Released at some party, 2025.XX.XX    #TODO
+Released at [XXXX party, 2025.xx.xx](https://party/#TODO)
+
 
 Features:
 - quiz game
 - 17 flags
+- playable web version
 - clean code
 - AI analyses
 
@@ -26,8 +28,8 @@ I wanted to make something that doesn't exist yet.
 I think, the combination of the following requirements
 meets the criteria:
 
-- 256-byte,
-- game,
+- 256-byte
+- game
 - with database,
 - written in clean code assembly.
 
@@ -62,9 +64,9 @@ TLDs were created for this very purpose:
 - the input routine is very simple (it seemed so at the time),
 - the evaluation of the answers is straightforward,
   a flag has exactly one TLD associated with it,
-  which cannot be given in different forms,
+  which cannot be entered in different forms,
 - little data to store,
-- very little code to compare (a single 16-bit CMP).
+- very little data to compare (a single 16-bit CMP does the job).
 
 ## The concept
 
@@ -83,7 +85,7 @@ only _cyan_ and _purple_ are unnecessary.
 
 Out of the 16 colors in the palette,
 we only need only 8, the lighter ones.
-Luckily the black is still dark enough to use in flags,
+Luckily the "light black" is still dark enough to use in flags,
 but it still contrasts with the black background.
 Great!
 
@@ -113,7 +115,7 @@ Let's calculate how many bytes we need for the data:
 
 The difference is 102 bits = 13 bytes,
 which is practically 5-6 extra instructions,
-Probably this is not enough for
+I'm sure this is not enough for
 extra code needed for bit shifting,
 and I also wanted to keep the code clean,
 so I let go the idea of packing.
@@ -137,7 +139,8 @@ so an extra space and backspace must be printed.
 
 ### Displaying result
 
-The program doesn't tell you whether
+The trick is that
+the program doesn't tell you whether
 the answer is correct or not,
 in both cases it just prints the correct answer
 next to the player's answer,
@@ -147,7 +150,7 @@ for the two cases.
 The score is displayed in two ways.
 In both cases, the initial state is stored and
 the program changes it as the game goes.
-Thus the program can only run once.
+Thus the quiz can only run once.
 
 ### No random order
 
@@ -155,7 +158,8 @@ The order of the questions is constant.
 A random number generator,
 which takes each item through in random order,
 would have been difficult to implement.
-And it's unnecessary. frankly,
+And it's unnecessary.
+Frankly,
 who wants to play such a crappy game
 more than once?
 
@@ -186,12 +190,13 @@ The [inliner.py](inliner.py) script takes the source,
 and replaces subroutine calls with inline code,
 where possible.
 This mechanism was necessary to
-keep the original source in clean code style.
+keep the original source in clean code style
+without exceeding the 256-byte limit.
 
 ### Preparing for AI analysis
 
 The AI uses the clean code version of the program,
-with the changes that the comments are deleted,
+with the only changes that the comments are deleted,
 the data is included, and also the
 [prompt](ai/prompt-base.txt) is
 [added](ai/prompt-full.txt).

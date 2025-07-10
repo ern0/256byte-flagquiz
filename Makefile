@@ -1,4 +1,4 @@
-COUNT: flagquiz.com web/flagquiz.zip
+COUNT: flagquiz.com web/flagquiz.zip flagquiz-release.zip
 	@ls -l flagquiz.com | tr -s " " | cut -d" " -f5
 
 web/flagquiz.zip: flagquiz.com web/index.html web/dosbox.conf
@@ -6,6 +6,11 @@ web/flagquiz.zip: flagquiz.com web/index.html web/dosbox.conf
 	7z a web/flagquiz.zip flagquiz.com web/dosbox.conf
 	7z rn web/flagquiz.zip web/dosbox.conf .jsdos/dosbox.conf
 	7z l web/flagquiz.zip
+
+flagquiz-release.zip: flagquiz.com flagquiz.txt Makefile
+	rm -f flagquiz-release.zip
+	7z a flagquiz-release.zip flagquiz.com flagquiz.txt
+	7z l flagquiz-release.zip
 
 flagquiz.com: \
 			flagquiz.asm \

@@ -21,23 +21,23 @@ class Analyze:
 
     def main(self):
 
+        self.flag("Hungary", "hu", RED, WHITE, GREEN)
+        self.flag("Austria", "at", RED, WHITE, RED)
         self.flag("Germany", "de", BLACK, RED, YELLOW)
+        self.flag("Romania", "ro", BLUE, YELLOW, RED)
+        self.flag("Russia", "ru", WHITE, BLUE, RED)
+        self.flag("Serbia", "rs", RED, BLUE, WHITE)
+        self.flag("Belarus", "by", WHITE, RED, WHITE)
         self.flag("France", "fr", BLUE, WHITE, RED)
         self.flag("Bulgaria", "bg", WHITE, GREEN, RED)
         self.flag("Ireland", "ie", GREEN, WHITE, RED)
         self.flag("Netherlands", "nl", RED, WHITE, BLUE)
-        self.flag("Austria", "at", RED, WHITE, RED)
-        self.flag("Belarus", "by", WHITE, RED, WHITE)
-        self.flag("Russia", "ru", WHITE, BLUE, RED)
-        self.flag("Romania", "ro", BLUE, YELLOW, RED)
-        self.flag("Hungary", "hu", RED, WHITE, GREEN)
         self.flag("Lithuania", "lt", YELLOW, GREEN, RED)
-        self.flag("Serbia", "rs", RED, BLUE, WHITE)
         self.flag("Estonia", "ee", BLUE, BLACK, WHITE)
-        self.flag("Sierra Leone", "sl", GREEN, WHITE, BLUE)
+        self.flag("Armenia", "am", RED, BLUE, YELLOW)
         self.flag("Yemen", "ye", RED, WHITE, BLACK)
         self.flag("Gabon", "ga", GREEN, YELLOW, BLUE)
-        self.flag("Armenia", "am", RED, BLUE, YELLOW)
+        self.flag("Sierra Leone", "sl", GREEN, WHITE, BLUE)
 
     def flag(self, name, tld, c1, c2, c3):
 

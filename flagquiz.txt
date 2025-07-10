@@ -1,0 +1,15 @@
+flagquiz
+
+A 256-byte game with database,
+written in clean code assembly
+
+by ern0/Abaddon, 2025
+
+Features:
+- quiz game
+- 17 flags
+- playable web version
+- clean code
+- AI analyses
+
+https://github.com/ern0/256byte-flagquiz

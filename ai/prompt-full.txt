@@ -142,20 +142,20 @@ num_pass:
         db CR,LF,LF,'$'
 data:
 answer_buffer   equ $
+	db 0bcH, 0eaH, 68H   
+	db 3cH, 0e9H, 61H    
 	db 0a0H, 0cbH, 64H   
+	db 31H, 0dfH, 72H    
+	db 0fH, 0ebH, 72H    
+	db 0ccH, 0e7H, 72H   
+	db 0e7H, 0f3H, 62H   
 	db 39H, 0e5H, 66H    
 	db 17H, 0cfH, 62H    
 	db 3aH, 0cbH, 69H    
 	db 7cH, 0d8H, 6eH    
-	db 3cH, 0e9H, 61H    
-	db 0e7H, 0f3H, 62H   
-	db 0fH, 0ebH, 72H    
-	db 31H, 0dfH, 72H    
-	db 0bcH, 0eaH, 68H   
 	db 16H, 0e9H, 6cH    
-	db 0ccH, 0e7H, 72H   
 	db 0c1H, 0cbH, 65H   
-	db 7aH, 0d8H, 73H    
+	db 8cH, 0dbH, 61H    
 	db 3cH, 0caH, 79H    
 	db 72H, 0c2H, 67H    
-	db 8cH, 0dbH, 61H    
+	db 7aH, 0d8H, 73H    
