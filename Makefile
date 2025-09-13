@@ -7,9 +7,9 @@ web/flagquiz.zip: flagquiz.com web/index.html web/dosbox.conf
 	7z rn web/flagquiz.zip web/dosbox.conf .jsdos/dosbox.conf
 	7z l web/flagquiz.zip
 
-flagquiz-release.zip: flagquiz.com flagquiz.txt Makefile
+flagquiz-release.zip: flagquiz.com FILE_ID.DIZ Makefile
 	rm -f flagquiz-release.zip
-	7z a flagquiz-release.zip flagquiz.com flagquiz.txt
+	7z a flagquiz-release.zip flagquiz.com FILE_ID.DIZ
 	7z l flagquiz-release.zip
 
 flagquiz.com: \
