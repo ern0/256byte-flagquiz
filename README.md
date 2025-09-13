@@ -4,8 +4,7 @@
 
 ```
 Flag Quiz by ern0/Abaddon, a 256-byte DOS game
-Released at [T0ad party, 2025.09.13](https://t0ad.hu/en)
-
+Released at T0ad party, 2025.09.13
 
 Features:
 - quiz game
